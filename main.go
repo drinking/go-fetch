@@ -6,6 +6,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"os"
 	"strings"
 	"time"
 
@@ -113,10 +114,11 @@ func notify(content string) {
 // }
 
 func sendToSlack(msg string) {
+	SLACK_CHANEEL := os.Getenv("SLACK_CHANEEL")
 	client := &http.Client{}
 	message := fmt.Sprintf(`{"text":"%s"}`, msg)
 	var data = strings.NewReader(message)
-	req, err := http.NewRequest("POST", "https://hooks.slack.com/services/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", data)
+	req, err := http.NewRequest("POST", SLACK_CHANEEL, data)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -138,7 +140,7 @@ func main() {
 	for {
 		result, _ := fetch("https://sh.train.wenhuayun.cn/api/train/artTrain/artTrainDetail")
 		if result.LimitNum != result.SignNumi || result.Status != 4 {
-			notify("Fetch completed")
+			// notify("Fetch completed")
 			sendToSlack("https://sh.train.wenhuayun.cn/pdszqyg/cloud-train/train-detail?trainId=3e3e92356e5740bd8b6f661040aff64d")
 			break
 		} else {
